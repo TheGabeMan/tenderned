@@ -1,3 +1,10 @@
+"""
+TenderNed API XML voorbeeldcode
+Alle aankondigingen op TenderNed zijn openbaar, zodat de gegevens 
+voor iedereen beschikbaar zijn. Via de TenderNed API is het mogelijk 
+om zowel historische als actuele aankondigingen op te halen in XML-formaat.
+"""
+
 import logging
 import os
 
@@ -38,10 +45,11 @@ def call_tns_xml_api(session: requests.Session, pub_id: int) -> str:
     """
     # Make the API call using the requests library
     url = f"{BASE_URL}/publicaties/{pub_id}/public-xml"
-    logging.info(f"Retrieving data from {url}")
+    logging.info("Retrieving data from %s", url)
     response = session.get(url)
 
-    response.raise_for_status()  # Raise an exception if the status code indicates an error
+    # Raise an exception if the status code indicates an error
+    response.raise_for_status()
 
     return response.text
 
@@ -62,7 +70,7 @@ def parse_response(response_text: str) -> None:
     if not contract_title:
         raise ValueError("Contract does not contain a title")
 
-    logging.info(f"Contract title: {contract_title.get_text(strip=True)}")
+    logging.info("Contract title: %s", (contract_title.get_text(strip=True)))
 
 
 # Example usage:
@@ -76,14 +84,19 @@ def main() -> None:
     4. Parse the response
     """
     # Setup logging
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-8s %(message)s"
+    )
 
     # Load credentials from .env file
     load_dotenv()
     username = os.getenv("API_USERNAME")
     password = os.getenv("API_PASSWORD")
     if not username or not password:
-        logging.error("Please provide a username and password in the .env file.")
+        logging.error(
+            "Please provide a username and password in the .env file."
+        )
         return
 
     session = create_session(username, password)
